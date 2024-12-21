@@ -3,19 +3,16 @@ const Recipe = require('../Models/Recipe');
 const cloudinary = require('../Config/Cloudinary');
 
 const uploadRecipes = async (req, res) => {
-  // res.json({ msg: 'ok' });
   try {
     const { ingredients } = req.body;
     console.log(ingredients);
-    // Validate ingredients
     if (!ingredients || ingredients.length === 0) {
       return res.status(400).json({ error: 'Ingredients are required' });
     }
-    // Create a prompt for ChatGPT
+
     const prompt = `Give me a good recipe using these ingredients: ${ingredients.join(
-      ', '
+      ' , '
     )}`;
-    // Call ChatGPT API
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -50,7 +47,11 @@ const uploadRecipes = async (req, res) => {
   }
 };
 
-const downloadRecipes = async (req, res) => {};
+const downloadRecipes = async (req, res) => {
+  const recipe = await Recipe.find({});
+  if (!recipe) return res.status(400).json({ msg: 'something went wrong' });
+  res.status(200).json({ recipe });
+};
 const updateRecipes = async (req, res) => {
   const { id } = req.query;
   const response = await cloudinary.uploader.upload(req.file.path, {
@@ -70,5 +71,3 @@ module.exports = {
   downloadRecipes,
   updateRecipes,
 };
-
-//the user to download the rec
